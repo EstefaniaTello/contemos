@@ -43,13 +43,6 @@ int main()
 	al_install_keyboard();
 
 	
-	ALLEGRO_EVENT_QUEUE* evento = al_create_event_queue();
-	al_register_event_source(evento, al_get_keyboard_event_source());
-
-	bool terminado = false;
-	int x = 10, y = 10;
-	int velMovimiento = 5; 
-	int estado = NULL;
 
 	
 
@@ -73,15 +66,23 @@ int main()
 	//al_start_timer(segundoTimer);
 	al_register_event_source(queue, al_get_mouse_event_source());
 
-	menu();
+
+	
+	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
+	al_register_event_source(evento_queue, al_get_keyboard_event_source());
+
+	bool terminado = false;
+	int x = 10, y = 10;
+	int velMovimiento = 5; 
+	//int estado = NULL;
 
 	while (!terminado)
 	{
-		ALLEGRO_EVENT evento;
-		al_wait_for_event(queue, &evento);
-		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+		ALLEGRO_EVENT eventos;
+		al_wait_for_event(evento_queue, &eventos);
+		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
-			switch (evento.keyboard.keycode)
+			switch (eventos.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_DOWN:
 				y += velMovimiento;
@@ -107,8 +108,9 @@ int main()
 	}
 
 	al_destroy_display(ventana);
-	al_destroy_event_queue(evento);
+	al_destroy_event_queue(evento_queue);
 
+	menu();
 	
 }
 void menu()
