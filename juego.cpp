@@ -1,5 +1,6 @@
 #include <iostream>
 #include<allegro5/allegro.h>
+#include<stdlib.h>
 #include <allegro5/allegro_native_dialog.h>
 #include<allegro5/allegro_font.h>
 #include<allegro5/allegro_ttf.h>
@@ -16,7 +17,6 @@ void jugar();
 void menu();
 int ancho = 1280;
 int alto = 838;
-
 
 ALLEGRO_DISPLAY* ventana;
 ALLEGRO_FONT* Golden_Age_Shad;
@@ -40,6 +40,18 @@ int main()
 	al_init_primitives_addon();
 	al_install_mouse();
 	al_init_image_addon();
+	al_install_keyboard();
+
+	
+	ALLEGRO_EVENT_QUEUE* evento = al_create_event_queue();
+	al_register_event_source(evento, al_get_keyboard_event_source());
+
+	bool terminado = false;
+	int x = 10, y = 10;
+	int velMovimiento = 5; 
+	int estado = NULL;
+
+	
 
 	ventana = al_create_display(ancho, alto);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 70, 0);
@@ -62,6 +74,40 @@ int main()
 	al_register_event_source(queue, al_get_mouse_event_source());
 
 	menu();
+
+	while (!terminado)
+	{
+		ALLEGRO_EVENT evento;
+		al_wait_for_event(queue, &evento);
+		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (evento.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_DOWN:
+				y += velMovimiento;
+				break;
+			case ALLEGRO_KEY_UP:
+				y -= velMovimiento;
+				break;
+			case ALLEGRO_KEY_RIGHT:
+				x += velMovimiento;
+				break;
+			case ALLEGRO_KEY_LEFT:
+				x -= velMovimiento;
+				break;
+			case ALLEGRO_KEY_ESCAPE:
+				terminado = true;
+				break;
+
+			}
+		}
+		al_draw_rectangle(x, y, x + 20, y + 20, blanco, 2);
+		al_flip_display();
+		al_clear_to_color(negro);
+	}
+
+	al_destroy_display(ventana);
+	al_destroy_event_queue(evento);
 
 	
 }
@@ -153,5 +199,4 @@ void jugar()
 	cout << "diste click en jugar";
 
 }
-
 
