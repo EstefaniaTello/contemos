@@ -10,11 +10,14 @@
 #include<allegro5/allegro_image.h>
 #include <Windows.h>
 
+
 using namespace std;
 
+
 void salir();
-void jugar();
+void jugar(ALLEGRO_DISPLAY* ventana);
 void menu();
+void usarTeclado(ALLEGRO_DISPLAY* ventana);
 int ancho = 1280;
 int alto = 838;
 
@@ -25,6 +28,7 @@ ALLEGRO_EVENT_QUEUE* queue;
 ALLEGRO_COLOR blanco;
 ALLEGRO_COLOR naranja;
 ALLEGRO_COLOR negro;
+ALLEGRO_KEYBOARD_STATE keyState;
 
 int main()
 {
@@ -42,9 +46,7 @@ int main()
 	al_init_image_addon();
 	al_install_keyboard();
 
-	
 
-	
 
 	ventana = al_create_display(ancho, alto);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 70, 0);
@@ -54,65 +56,18 @@ int main()
 	al_set_window_title(ventana, "CONTEMOS");
 	al_set_window_position(ventana, ancho_W / 2 - ancho / 2, alto_W / 2 - alto / 2);
 
-	//segundoTimer = al_create_timer(1.0);
 	queue = al_create_event_queue();
 
 	blanco = al_map_rgb(255, 255, 255);
 	naranja = al_map_rgb(239, 186, 36);
 	negro = al_map_rgb(0, 0, 0);
 
-	
-	//al_register_event_source(queue, al_get_timer_event_source(segundoTimer));
-	//al_start_timer(segundoTimer);
 	al_register_event_source(queue, al_get_mouse_event_source());
-
-
-	
-	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
-	al_register_event_source(evento_queue, al_get_keyboard_event_source());
-
-	bool terminado = false;
-	int x = 10, y = 10;
-	int velMovimiento = 5; 
-	//int estado = NULL;
-
-	while (!terminado)
-	{
-		ALLEGRO_EVENT eventos;
-		al_wait_for_event(evento_queue, &eventos);
-		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
-		{
-			switch (eventos.keyboard.keycode)
-			{
-			case ALLEGRO_KEY_DOWN:
-				y += velMovimiento;
-				break;
-			case ALLEGRO_KEY_UP:
-				y -= velMovimiento;
-				break;
-			case ALLEGRO_KEY_RIGHT:
-				x += velMovimiento;
-				break;
-			case ALLEGRO_KEY_LEFT:
-				x -= velMovimiento;
-				break;
-			case ALLEGRO_KEY_ESCAPE:
-				terminado = true;
-				break;
-
-			}
-		}
-		al_draw_rectangle(x, y, x + 20, y + 20, blanco, 2);
-		al_flip_display();
-		al_clear_to_color(negro);
-	}
-
-	al_destroy_display(ventana);
-	al_destroy_event_queue(evento_queue);
 
 	menu();
 	
 }
+
 void menu()
 {
 	ALLEGRO_BITMAP* menu_null = al_load_bitmap("imagenes/menu_null.jpeg");
@@ -125,13 +80,6 @@ void menu()
 	{
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
-		/*if (evento.type == ALLEGRO_EVENT_TIMER)
-		{
-			if (evento.timer.source == segundoTimer)
-			{
-				segundo++;
-			}
-		}*/
 		al_clear_to_color(al_map_rgb(0, 0, 0));
 		al_draw_bitmap(menu_null, 0, 0, 0);
 
@@ -146,7 +94,7 @@ void menu()
 				al_draw_bitmap(menu_iniciar, 0, 0, 0);
 				if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 				{
-					jugar();
+					jugar(ventana);
 				}
 			}
 			if (x >= 802 && x <= 1077 && y >= 609 && y <= 694)
@@ -186,7 +134,7 @@ void salir()
 	cout << "diste click en salir";
 }
 
-void jugar()
+void jugar(ALLEGRO_DISPLAY * ventana)
 {
 
 	while (true)
@@ -196,9 +144,57 @@ void jugar()
 		al_clear_to_color(negro);
 		al_draw_filled_circle(200, 200, 100, al_map_rgb(255, 255, 255));
 		al_flip_display();
+		usarTeclado(ventana);
 
 	}
 	cout << "diste click en jugar";
 
 }
+void usarTeclado(ALLEGRO_DISPLAY* ventana)
+{
+	
+	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
+	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 60);
+	al_register_event_source(evento_queue, al_get_keyboard_event_source());
+	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
+	//no declarar variables antes del tiempo
+	al_start_timer(tiempo);
 
+	bool terminado = false, dibujo = true;
+	int x = 70, y = 600;
+	int velMovimiento = 30;
+	//int estado = NULL;
+
+	while (!terminado)
+	{
+		ALLEGRO_EVENT eventos;
+		al_wait_for_event(evento_queue, &eventos);
+		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (eventos.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_DOWN:
+				y += velMovimiento;
+				break;
+			case ALLEGRO_KEY_UP:
+				y -= velMovimiento;
+				break;
+			case ALLEGRO_KEY_RIGHT:
+				x += velMovimiento;
+				break;
+			case ALLEGRO_KEY_LEFT:
+				x -= velMovimiento;
+				break;
+			case ALLEGRO_KEY_ESCAPE:
+				terminado = true;
+				break;
+
+			}
+		}
+		al_draw_rectangle(x, y, x + 20, y + 20, blanco, 2);
+		al_flip_display();
+		al_clear_to_color(negro);
+	}
+	al_destroy_display(ventana);
+	al_destroy_event_queue(evento_queue);
+}
