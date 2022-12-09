@@ -8,7 +8,8 @@
 #include<string>
 #include<allegro5/allegro_primitives.h>
 #include<allegro5/allegro_image.h>
-#include <Windows.h>
+#include<Windows.h>
+#include<sstream>
 
 
 using namespace std;
@@ -73,6 +74,7 @@ void menu()
 	ALLEGRO_BITMAP* menu_null = al_load_bitmap("imagenes/menu_null.jpeg");
 	ALLEGRO_BITMAP* menu_iniciar = al_load_bitmap("imagenes/menu_iniciar.jpeg");
 	ALLEGRO_BITMAP* menu_salir = al_load_bitmap("imagenes/menu_salir.jpeg");
+
 
 	int x = -1, y = -1;
 	int segundo = 0;
@@ -158,7 +160,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	//para que se ejecute a la misma velocidad en cualquier computadora 
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 /5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
-	ALLEGRO_BITMAP* gato = al_load_bitmap("imagenes/correr.jpeg");
+	ALLEGRO_BITMAP* caminando[8];
 	ALLEGRO_KEYBOARD_STATE keyState;
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
@@ -170,9 +172,16 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	bool terminado = false, dibujo = true, activo = false;
 	int x = 70, y = 600;
 	int velMovimiento = 30;
-	float ejeX, ejeY;
-	ejeX = 16, ejeY = 56; 
+	int i, indice, dirPrevia;
+	indice = 0, dirPrevia = 0; 
 	//int estado = NULL;
+
+	for (i = 0; i < 8; i++)
+	{
+		std::stringstream str;
+		str << "sprites/" << i + 1<<".jpg";
+		caminando[i] = al_load_bitmap(str.str().c_str());
+	}
 
 	while (!terminado)
 	{
@@ -208,13 +217,13 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				{
 					x += velMovimiento;
 				}
-				else
+				/*else
 				{
 					if (al_key_down(&keyState, ALLEGRO_KEY_LEFT))
 					{
 						x -= velMovimiento;
 					}
-				}
+				}*/
 			}
 			else
 			{
@@ -222,27 +231,26 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			}
 			if (activo)
 			{
-				ejeX += al_get_bitmap_width(gato) / 4;
-			}
-			else
-			{
-				ejeX = 524;
-			}
-			if (ejeX >= al_get_bitmap_width(gato))
-			{
-				ejeX = 16;
+				indice++;
+				if (indice >= 8)
+				{
+					indice = 0;
+				}
 			}
 			dibujo = true;
 		}
 		if (dibujo)
 		{
-			al_draw_bitmap_region(gato, ejeX, ejeY = al_get_bitmap_height(gato)/3, 128,128,x,y,NULL);
+			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
 			al_clear_to_color(negro);
 		}	
 	}
 	al_destroy_display(ventana);
-	al_destroy_bitmap(gato);
+	for (i = 0; i < 8; i++)
+	{
+		al_destroy_bitmap(caminando[i]);
+	}
 	al_destroy_event_queue(evento_queue);
 }
 
