@@ -140,6 +140,7 @@ void jugar(ALLEGRO_DISPLAY * ventana)
 	while (true)
 	{
 		ALLEGRO_EVENT evento;
+
 		al_wait_for_event(queue, &evento);
 		al_clear_to_color(negro);
 		al_draw_filled_circle(200, 200, 100, al_map_rgb(255, 255, 255));
@@ -155,6 +156,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 60);
+	ALLEGRO_BITMAP* gato = al_load_bitmap("imagenes/saltar.jpeg");
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
 	//no declarar variables antes del tiempo
@@ -169,6 +171,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	{
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(evento_queue, &eventos);
+
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
 			switch (eventos.keyboard.keycode)
@@ -191,10 +194,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 
 			}
 		}
-		al_draw_rectangle(x, y, x + 20, y + 20, blanco, 2);
+		al_draw_bitmap(gato,x,y, NULL);
 		al_flip_display();
 		al_clear_to_color(negro);
 	}
 	al_destroy_display(ventana);
+	al_destroy_bitmap(gato);
 	al_destroy_event_queue(evento_queue);
 }
