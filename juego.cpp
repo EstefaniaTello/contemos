@@ -154,17 +154,24 @@ void jugar(ALLEGRO_DISPLAY * ventana)
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
 	
+	
+	//para que se ejecute a la misma velocidad en cualquier computadora 
+	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 /5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
-	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 60);
-	ALLEGRO_BITMAP* gato = al_load_bitmap("imagenes/saltar.jpeg");
+	ALLEGRO_BITMAP* gato = al_load_bitmap("imagenes/correr.jpeg");
+	ALLEGRO_KEYBOARD_STATE keyState;
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
+	al_get_keyboard_state(&keyState);
 	//no declarar variables antes del tiempo
 	al_start_timer(tiempo);
-
-	bool terminado = false, dibujo = true;
+	
+	
+	bool terminado = false, dibujo = true, activo = false;
 	int x = 70, y = 600;
 	int velMovimiento = 30;
+	float ejeX, ejeY;
+	ejeX = 16, ejeY = 56; 
 	//int estado = NULL;
 
 	while (!terminado)
@@ -176,12 +183,6 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		{
 			switch (eventos.keyboard.keycode)
 			{
-			case ALLEGRO_KEY_DOWN:
-				y += velMovimiento;
-				break;
-			case ALLEGRO_KEY_UP:
-				y -= velMovimiento;
-				break;
 			case ALLEGRO_KEY_RIGHT:
 				x += velMovimiento;
 				break;
@@ -191,14 +192,59 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			case ALLEGRO_KEY_ESCAPE:
 				terminado = true;
 				break;
-
 			}
 		}
-		al_draw_bitmap(gato,x,y, NULL);
-		al_flip_display();
-		al_clear_to_color(negro);
+
+		if (eventos.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+		{
+			terminado = true;
+		}
+		else
+		{
+			if (eventos.type == ALLEGRO_EVENT_TIMER)
+			{
+				activo = true;
+				if (al_key_down(&keyState, ALLEGRO_KEY_RIGHT))
+				{
+					x += velMovimiento;
+				}
+				else
+				{
+					if (al_key_down(&keyState, ALLEGRO_KEY_LEFT))
+					{
+						x -= velMovimiento;
+					}
+				}
+			}
+			else
+			{
+				activo = false;
+			}
+			if (activo)
+			{
+				ejeX += al_get_bitmap_width(gato) / 4;
+			}
+			else
+			{
+				ejeX = 524;
+			}
+			if (ejeX >= al_get_bitmap_width(gato))
+			{
+				ejeX = 16;
+			}
+			dibujo = true;
+		}
+		if (dibujo)
+		{
+			al_draw_bitmap_region(gato, ejeX, ejeY = al_get_bitmap_height(gato)/3, 128,128,x,y,NULL);
+			al_flip_display();
+			al_clear_to_color(negro);
+		}	
 	}
 	al_destroy_display(ventana);
 	al_destroy_bitmap(gato);
 	al_destroy_event_queue(evento_queue);
 }
+
+
+
