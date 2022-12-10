@@ -10,17 +10,17 @@
 #include<allegro5/allegro_image.h>
 #include<Windows.h>
 #include<sstream>
-
+#include<time.h>
 
 using namespace std;
 
-
 void salir();
-void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue);
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego);
 void menu();
+void numeros();
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
-int ancho = 1106;
-int alto = 700;
+float ancho = 1106;
+float alto = 700;
 ALLEGRO_DISPLAY* ventana;
 ALLEGRO_BITMAP* buffer;
 ALLEGRO_FONT* Golden_Age_Shad;
@@ -29,11 +29,13 @@ ALLEGRO_EVENT_QUEUE* queue;
 ALLEGRO_COLOR blanco;
 ALLEGRO_COLOR naranja;
 ALLEGRO_COLOR negro;
+ALLEGRO_COLOR rojo; 
+ALLEGRO_COLOR azul;
 ALLEGRO_KEYBOARD_STATE keyState;
 
 int main()
 {
-
+	srand (time(NULL));
 	if (!al_init())
 	{
 		al_show_native_message_box(NULL, "ERROR CRITICO", "ERROR:404", "No se pudo cargar correctamente", NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -81,6 +83,8 @@ void menu()
 	blanco = al_map_rgb(255, 255, 255);
 	naranja = al_map_rgb(239, 186, 36);
 	negro = al_map_rgb(0, 0, 0);
+	rojo = al_map_rgb(255, 43, 43);
+	azul = al_map_rgb(53, 43, 255);
 
 	bool end_program = false;
 
@@ -105,7 +109,7 @@ void menu()
 				if (evento.mouse.button & 1)
 				{
 					al_draw_bitmap(menu_start, 0, 0, 0);
-					jugar(negro, buffer, queue);
+					jugar(negro, buffer);
 
 				}
 				else
@@ -134,8 +138,6 @@ void menu()
 					al_draw_bitmap(menu_null, 0, 0, 0);
 				}
 			}
-
-
 		}
 		else
 		{
@@ -181,7 +183,7 @@ al_flip_display();
 	cout << "diste click en salir";
 }
 
-void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue)
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego)
 {
 	cout << "Presionaste JUGAR\n";
 	while (true)
@@ -210,18 +212,18 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	//no declarar variables antes del tiempo
 	al_start_timer(tiempo);
 
-
 	bool terminado = false, dibujo = true, activo = false;
-	int x = 60, y = 400;
+	int x = 24, y = 460;
 	int velMovimiento = 70;
 	int i, indice, dirPrevia;
 	indice = 0, dirPrevia = 0;
+	float camaraPos[2] = {0,0};
 
 
 	for (i = 0; i < 8; i++)
 	{
 		std::stringstream str;
-		str << "sprites/" << i + 1 << ".jpg";
+		str << "sprites/" << i + 1 << ".png";
 		caminando[i] = al_load_bitmap(str.str().c_str());
 	}
 
@@ -236,6 +238,10 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			{
 			case ALLEGRO_KEY_RIGHT:
 				x += velMovimiento;
+				if (x >= 1100)
+				{
+					x = 24;
+				}
 				break;
 			case ALLEGRO_KEY_LEFT:
 				x -= velMovimiento;
@@ -259,18 +265,12 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				{
 					x += velMovimiento;
 				}
-				/*else
-				{
-					if (al_key_down(&keyState, ALLEGRO_KEY_LEFT))
-					{
-						x -= velMovimiento;
-					}
-				}*/
 			}
 			else
 			{
 				activo = false;
 			}
+
 			if (activo)
 			{
 				indice++;
@@ -280,9 +280,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				}
 			}
 			dibujo = true;
+
 		}
 		if (dibujo)
 		{
+			numeros();
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
 			al_draw_bitmap(buffer, 0, 0, 0);
@@ -295,6 +297,27 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		al_destroy_bitmap(caminando[i]);
 	}
 	al_destroy_event_queue(evento_queue);
+	al_destroy_bitmap(buffer);
+
+	
 }
 
+void numeros(int rf)
+{
+	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 80, 0);
+	int n1, n2, n3;
+	char num1, num2, num3;
+
+	n1 = rand()% rf + 1;
+	n2 = rand()% rf + 1;
+	n3 = rand()% rf + 1;
+
+	itoa(n1,&num1,2);
+	itoa(n2,&num2,2);
+	itoa(n3, &num3, 2);
+
+	al_draw_text(Golden_Age_Shad, azul, 185, 275, NULL,&num1);
+	al_draw_text(Golden_Age_Shad, azul, 520, 275, NULL, &num2);
+	al_draw_text(Golden_Age_Shad, azul, 875, 275, NULL, &num3);
+}
 
