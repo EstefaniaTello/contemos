@@ -16,11 +16,11 @@ using namespace std;
 
 
 void salir();
-void jugar(ALLEGRO_DISPLAY* ventana);
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue);
 void menu();
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
-int ancho = 1280;
-int alto = 838;
+int ancho = 1106;
+int alto = 700;
 ALLEGRO_DISPLAY* ventana;
 ALLEGRO_BITMAP* buffer;
 ALLEGRO_FONT* Golden_Age_Shad;
@@ -72,53 +72,97 @@ int main()
 
 void menu()
 {
-	ALLEGRO_BITMAP* menu_null = al_load_bitmap("imagenes/menu_null.jpeg");
-	ALLEGRO_BITMAP* menu_iniciar = al_load_bitmap("imagenes/menu_iniciar.jpeg");
-	ALLEGRO_BITMAP* menu_salir = al_load_bitmap("imagenes/menu_salir.jpeg");
+	ALLEGRO_BITMAP* menu_null = al_load_bitmap("imagenes/fondo/background.png");
+	ALLEGRO_BITMAP* menu_start = al_load_bitmap("imagenes/fondo/background_jugar.png");
+	ALLEGRO_BITMAP* menu_start_1 = al_load_bitmap("imagenes/fondo/background_jugar_1.png");
+	ALLEGRO_BITMAP* menu_exit = al_load_bitmap("imagenes/fondo/background_salir.png");
+	ALLEGRO_BITMAP* menu_exit_1 = al_load_bitmap("imagenes/fondo/background_salir_1.png");
+	ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
+	blanco = al_map_rgb(255, 255, 255);
+	naranja = al_map_rgb(239, 186, 36);
+	negro = al_map_rgb(0, 0, 0);
 
+	bool end_program = false;
 
 	int x = -1, y = -1;
 	int segundo = 0;
-	while (true)
+	while (!end_program)
 	{
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
-		al_clear_to_color(al_map_rgb(0, 0, 0));
-		al_draw_bitmap(menu_null, 0, 0, 0);
+		al_clear_to_color(negro);
+
 
 
 		if (evento.type == ALLEGRO_EVENT_MOUSE_AXES || evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 		{
-			cout << "x: " << x << "y : " << y << endl;
 			x = evento.mouse.x;
 			y = evento.mouse.y;
-			if (x >= 801 && x <= 1077 && y >= 458 && y <= 546)
-			{
-				al_draw_bitmap(menu_iniciar, 0, 0, 0);
-				if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
-				{
-					jugar(ventana);
-				}
-			}
-			if (x >= 802 && x <= 1077 && y >= 609 && y <= 694)
-			{
-				al_draw_bitmap(menu_salir, 0, 0, 0);
-				if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
-				{
-					salir();
-				}
 
+			if (x >= 704 && x <= 976 && y >= 398 && y <= 475)
+			{
+				al_draw_bitmap(menu_start_1, 0, 0, 0);
+				if (evento.mouse.button & 1)
+				{
+					al_draw_bitmap(menu_start, 0, 0, 0);
+					jugar(negro, buffer, queue);
+
+				}
+				else
+				{
+					al_draw_bitmap(menu_start_1, 0, 0, 0);
+				}
 			}
-		}
-		if (x >= 200 && x <= 400 && y >= 280 && y <= 350)
-		{
-			al_draw_filled_rectangle(200, 280, 400, 350, naranja);
+			else
+			{
+				if (x >= 704 && x <= 976 && y >= 529 && y <= 607)
+				{
+					al_draw_bitmap(menu_exit_1, 0, 0, 0);
+					if (evento.mouse.button & 1)
+					{
+						al_draw_bitmap(menu_exit, 0, 0, 0);
+						cout << "Presionaste SALIR\n";
+						end_program = false;
+					}
+					else
+					{
+						al_draw_bitmap(menu_exit_1, 0, 0, 0);
+					}
+				}
+				else
+				{
+					al_draw_bitmap(menu_null, 0, 0, 0);
+				}
+			}
+
+
 		}
 		else
 		{
-			al_draw_filled_rectangle(200, 280, 400, 350, blanco);
+			al_draw_bitmap(menu_null, 0, 0, 0);
 		}
-		al_draw_text(Golden_Age_Shad, al_map_rgb(255, 255, 255), 200, 200, NULL, "CONTEMOS ");
+
+
+		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (evento.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_DOWN:
+				cout << "presionaste abajo\n";
+				break;
+			case ALLEGRO_KEY_UP:
+				cout << "presionaste arriba\n";
+				break;
+			case ALLEGRO_KEY_ENTER:
+			case ALLEGRO_KEY_PAD_ENTER:
+				cout << "presionaste enter\n";
+				break;
+
+			default:
+				break;
+			}
+		}
+
 		al_flip_display();
 	}
 
@@ -137,26 +181,24 @@ al_flip_display();
 	cout << "diste click en salir";
 }
 
-void jugar(ALLEGRO_DISPLAY* ventana)
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue)
 {
-	
-
+	cout << "Presionaste JUGAR\n";
 	while (true)
 	{
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
-		buffer = al_load_bitmap("fondo1.jpeg");
+		al_clear_to_color(negro);
+		al_draw_bitmap(fondo_juego, 0, 0, 0);
 		al_flip_display();
 		usarTeclado(ventana);
-
 	}
-	cout << "diste click en jugar";
-
 }
+
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
 
-
+	ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
 	//para que se ejecute a la misma velocidad en cualquier computadora 
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
@@ -170,11 +212,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 
 
 	bool terminado = false, dibujo = true, activo = false;
-	int x = 70, y = 600;
-	int velMovimiento = 30;
+	int x = 60, y = 400;
+	int velMovimiento = 70;
 	int i, indice, dirPrevia;
 	indice = 0, dirPrevia = 0;
-	//int estado = NULL;
+
 
 	for (i = 0; i < 8; i++)
 	{
@@ -243,7 +285,8 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		{
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
-			al_clear_to_color(negro);
+			al_draw_bitmap(buffer, 0, 0, 0);
+			//al_clear_to_color(negro);
 		}
 	}
 	al_destroy_display(ventana);
