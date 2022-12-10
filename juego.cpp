@@ -21,8 +21,8 @@ void menu();
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
 int ancho = 1280;
 int alto = 838;
-
 ALLEGRO_DISPLAY* ventana;
+ALLEGRO_BITMAP* buffer;
 ALLEGRO_FONT* Golden_Age_Shad;
 ALLEGRO_TIMER* segundoTimer;
 ALLEGRO_EVENT_QUEUE* queue;
@@ -50,6 +50,7 @@ int main()
 
 
 	ventana = al_create_display(ancho, alto);
+	ALLEGRO_BITMAP* buffer = al_create_bitmap(ancho, alto);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 70, 0);
 
 	int ancho_W = GetSystemMetrics(SM_CXSCREEN);
@@ -130,22 +131,21 @@ void salir()
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
 		al_clear_to_color(negro);
-		al_flip_display();
+al_flip_display();
 
 	}
 	cout << "diste click en salir";
 }
 
-void jugar(ALLEGRO_DISPLAY * ventana)
+void jugar(ALLEGRO_DISPLAY* ventana)
 {
+	
 
 	while (true)
 	{
 		ALLEGRO_EVENT evento;
-
 		al_wait_for_event(queue, &evento);
-		al_clear_to_color(negro);
-		al_draw_filled_circle(200, 200, 100, al_map_rgb(255, 255, 255));
+		buffer = al_load_bitmap("fondo1.jpeg");
 		al_flip_display();
 		usarTeclado(ventana);
 
@@ -155,10 +155,10 @@ void jugar(ALLEGRO_DISPLAY * ventana)
 }
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
-	
-	
+
+
 	//para que se ejecute a la misma velocidad en cualquier computadora 
-	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 /5);
+	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
 	ALLEGRO_BITMAP* caminando[8];
 	ALLEGRO_KEYBOARD_STATE keyState;
@@ -167,19 +167,19 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	al_get_keyboard_state(&keyState);
 	//no declarar variables antes del tiempo
 	al_start_timer(tiempo);
-	
-	
+
+
 	bool terminado = false, dibujo = true, activo = false;
 	int x = 70, y = 600;
 	int velMovimiento = 30;
 	int i, indice, dirPrevia;
-	indice = 0, dirPrevia = 0; 
+	indice = 0, dirPrevia = 0;
 	//int estado = NULL;
 
 	for (i = 0; i < 8; i++)
 	{
 		std::stringstream str;
-		str << "sprites/" << i + 1<<".jpg";
+		str << "sprites/" << i + 1 << ".jpg";
 		caminando[i] = al_load_bitmap(str.str().c_str());
 	}
 
@@ -244,7 +244,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
 			al_clear_to_color(negro);
-		}	
+		}
 	}
 	al_destroy_display(ventana);
 	for (i = 0; i < 8; i++)
@@ -253,6 +253,5 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	}
 	al_destroy_event_queue(evento_queue);
 }
-
 
 
