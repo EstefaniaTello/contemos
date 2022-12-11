@@ -18,13 +18,13 @@
 using namespace std;
 
 void salir();
-void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego);
-void menu();
+void jugar(ALLEGRO_DISPLAY* ventana);
+void menu(ALLEGRO_DISPLAY* ventana);
 void numeros(int n1, int n2);
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
 float ancho = 1106;
 float alto = 700;
-ALLEGRO_DISPLAY* ventana;
+
 ALLEGRO_BITMAP* buffer;
 ALLEGRO_FONT* Golden_Age_Shad;
 ALLEGRO_TIMER* segundoTimer;
@@ -54,7 +54,7 @@ int main()
 
 
 
-	ventana = al_create_display(ancho, alto);
+	ALLEGRO_DISPLAY* ventana = al_create_display(ancho, alto);
 	ALLEGRO_BITMAP* buffer = al_create_bitmap(ancho, alto);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 70, 0);
 
@@ -71,18 +71,18 @@ int main()
 
 	al_register_event_source(queue, al_get_mouse_event_source());
 
-	menu();
+	menu(ventana);
 	
 }
 
-void menu()
+void menu(ALLEGRO_DISPLAY*ventana)
 {
 	ALLEGRO_BITMAP* menu_null = al_load_bitmap("imagenes/fondo/background.png");
 	ALLEGRO_BITMAP* menu_start = al_load_bitmap("imagenes/fondo/background_jugar.png");
 	ALLEGRO_BITMAP* menu_start_1 = al_load_bitmap("imagenes/fondo/background_jugar_1.png");
 	ALLEGRO_BITMAP* menu_exit = al_load_bitmap("imagenes/fondo/background_salir.png");
 	ALLEGRO_BITMAP* menu_exit_1 = al_load_bitmap("imagenes/fondo/background_salir_1.png");
-	ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
+	//ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
 	blanco = al_map_rgb(255, 255, 255);
 	naranja = al_map_rgb(239, 186, 36);
 	negro = al_map_rgb(0, 0, 0);
@@ -112,7 +112,7 @@ void menu()
 				if (evento.mouse.button & 1)
 				{
 					al_draw_bitmap(menu_start, 0, 0, 0);
-					jugar(negro, buffer);
+					jugar(ventana);
 
 				}
 				else
@@ -186,7 +186,7 @@ al_flip_display();
 	cout << "diste click en salir";
 }
 
-void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego)
+void jugar(ALLEGRO_DISPLAY * ventana)
 {
 	cout << "Presionaste JUGAR\n";
 	while (true)
@@ -194,7 +194,7 @@ void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego)
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
 		al_clear_to_color(negro);
-		al_draw_bitmap(fondo_juego, 0, 0, 0);
+		//al_draw_bitmap(fondo_juego, 0, 0, 0);
 		al_flip_display();
 		usarTeclado(ventana);
 	}
@@ -203,11 +203,12 @@ void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego)
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
 
-	ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
+	//ALLEGRO_BITMAP* buffer = al_load_bitmap("fondo1.png");
 	//para que se ejecute a la misma velocidad en cualquier computadora 
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
 	ALLEGRO_BITMAP* caminando[8];
+	ALLEGRO_BITMAP* fondo[2];
 	ALLEGRO_KEYBOARD_STATE keyState;
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
@@ -218,8 +219,8 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	bool terminado = false, dibujo = true, activo = false;
 	int x = 24, y = 460;
 	int velMovimiento = 183;
-	int i, indice,resultado;
-	indice = 0;
+	int i, j, indice,resultado;
+	indice = 0, j = 0;
 	float camaraPos[2] = {0,0};
 	int n1, n2;
 	int rf = 5;
@@ -234,6 +235,13 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		str << "sprites/" << i + 1 << ".png";
 		caminando[i] = al_load_bitmap(str.str().c_str());
 	}
+	for (j = 0; j < 2; j++)
+	{
+		std::stringstream str;
+		str << "fondo/" << j + 1 << ".png";
+		fondo[j] = al_load_bitmap(str.str().c_str());
+	}
+	j = 0;
 
 	while (!terminado)
 	{
@@ -249,11 +257,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				if (x >= 1100)
 				{
 					x = 24;
-
-					/*j = j + 1;
-					std::stringstream str;
-					str << "fondo/" << j + 1 << ".png";
-					al_load_bitmap(str.str().c_str());*/
+					j = 1;
+				}
+				else
+				{
+					j = 0;
 				}
 				break;
 			case ALLEGRO_KEY_LEFT:
@@ -300,19 +308,17 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			numeros(n1, n2);
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
-			al_draw_bitmap(buffer, 0, 0, 0);
+			al_draw_bitmap(fondo[j], 0, 0, 0);
 			//al_clear_to_color(negro);
 		}
 	}
-	al_destroy_display(ventana);
+	//al_destroy_display(ventana);
 	for (i = 0; i < 8; i++)
 	{
 		al_destroy_bitmap(caminando[i]);
 	}
 	al_destroy_event_queue(evento_queue);
-	al_destroy_bitmap(buffer);
-
-	
+	al_destroy_bitmap(fondo[j]);
 }
 
 
