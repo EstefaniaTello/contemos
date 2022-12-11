@@ -1,6 +1,7 @@
 #include <iostream>
 #include<allegro5/allegro.h>
 #include<stdlib.h>
+#include<string.h>
 #include <allegro5/allegro_native_dialog.h>
 #include<allegro5/allegro_font.h>
 #include<allegro5/allegro_ttf.h>
@@ -10,14 +11,16 @@
 #include<allegro5/allegro_image.h>
 #include<Windows.h>
 #include<sstream>
-#include<time.h>
+#include<ctime>
+#include<stdio.h>
+#include "libreria.h"
 
 using namespace std;
 
 void salir();
 void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego);
 void menu();
-void numeros();
+void numeros(int n1, int n2);
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
 float ancho = 1106;
 float alto = 700;
@@ -214,11 +217,16 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 
 	bool terminado = false, dibujo = true, activo = false;
 	int x = 24, y = 460;
-	int velMovimiento = 70;
-	int i, indice, dirPrevia;
-	indice = 0, dirPrevia = 0;
+	int velMovimiento = 183;
+	int i, indice,resultado;
+	indice = 0;
 	float camaraPos[2] = {0,0};
-
+	int n1, n2;
+	int rf = 5;
+	n1 = rand() % rf + 1;
+	n2 = rand() % rf + 1;
+	resultado = n1 + n2;
+	numeros(n1,n2);
 
 	for (i = 0; i < 8; i++)
 	{
@@ -241,6 +249,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				if (x >= 1100)
 				{
 					x = 24;
+
+					/*j = j + 1;
+					std::stringstream str;
+					str << "fondo/" << j + 1 << ".png";
+					al_load_bitmap(str.str().c_str());*/
 				}
 				break;
 			case ALLEGRO_KEY_LEFT:
@@ -284,7 +297,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		}
 		if (dibujo)
 		{
-			numeros();
+			numeros(n1, n2);
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
 			al_draw_bitmap(buffer, 0, 0, 0);
@@ -302,22 +315,4 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	
 }
 
-void numeros(int rf)
-{
-	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 80, 0);
-	int n1, n2, n3;
-	char num1, num2, num3;
-
-	n1 = rand()% rf + 1;
-	n2 = rand()% rf + 1;
-	n3 = rand()% rf + 1;
-
-	itoa(n1,&num1,2);
-	itoa(n2,&num2,2);
-	itoa(n3, &num3, 2);
-
-	al_draw_text(Golden_Age_Shad, azul, 185, 275, NULL,&num1);
-	al_draw_text(Golden_Age_Shad, azul, 520, 275, NULL, &num2);
-	al_draw_text(Golden_Age_Shad, azul, 875, 275, NULL, &num3);
-}
 
