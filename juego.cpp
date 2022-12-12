@@ -20,7 +20,8 @@ using namespace std;
 void salir();
 void jugar(ALLEGRO_DISPLAY* ventana);
 void menu(ALLEGRO_DISPLAY* ventana);
-void numeros(int n1, int n2);
+void impNum(int n1, int n2); 
+int puntaje(int resultado, int avanceJugador, int puntos);
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
 float ancho = 1106;
 float alto = 700;
@@ -178,9 +179,10 @@ void salir()
 	while (true)
 	{
 		ALLEGRO_EVENT evento;
+		queue = al_create_event_queue();
 		al_wait_for_event(queue, &evento);
 		al_clear_to_color(negro);
-al_flip_display();
+		al_flip_display();
 
 	}
 	cout << "diste click en salir";
@@ -194,7 +196,6 @@ void jugar(ALLEGRO_DISPLAY * ventana)
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(queue, &evento);
 		al_clear_to_color(negro);
-		//al_draw_bitmap(fondo_juego, 0, 0, 0);
 		al_flip_display();
 		usarTeclado(ventana);
 	}
@@ -209,6 +210,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
 	ALLEGRO_BITMAP* caminando[8];
 	ALLEGRO_BITMAP* fondo[2];
+	ALLEGRO_BITMAP* vidas[7];
 	ALLEGRO_KEYBOARD_STATE keyState;
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
@@ -218,16 +220,18 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 
 	bool terminado = false, dibujo = true, activo = false;
 	int x = 24, y = 460;
+	int xfondo = 24;
 	int velMovimiento = 183;
-	int i, j, indice,resultado;
-	indice = 0, j = 0;
-	float camaraPos[2] = {0,0};
+	int i, j, l, indice, resultado, avanceJugador, puntos = 0;
+	indice = 0, j = 0, avanceJugador = 1;
+	bool correcto = true;
+	float camaraPos[2] = { 0,0 };
 	int n1, n2;
 	int rf = 5;
 	n1 = rand() % rf + 1;
 	n2 = rand() % rf + 1;
 	resultado = n1 + n2;
-	numeros(n1,n2);
+	impNum(n1,n2); 
 
 	for (i = 0; i < 8; i++)
 	{
@@ -241,34 +245,75 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		str << "fondo/" << j + 1 << ".png";
 		fondo[j] = al_load_bitmap(str.str().c_str());
 	}
+	for (l = 0; l <= 7; l++)
+	{
+		std::stringstream str;
+		str << "lifes/" << l << ".png";
+		vidas[l] = al_load_bitmap(str.str().c_str());
+	}
 	j = 0;
+	l = 7;
 
 	while (!terminado)
 	{
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(evento_queue, &eventos);
-
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
 			switch (eventos.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_RIGHT:
 				x += velMovimiento;
+				avanceJugador++;
+				xfondo += velMovimiento;
+
 				if (x >= 1100)
 				{
 					x = 24;
-					j = 1;
+				}
+				if (xfondo < 1100)
+				{
+					j = 0;
 				}
 				else
 				{
-					j = 0;
+					j = 1;
+					if (xfondo > 2200)
+					{
+						j = 0;
+						xfondo = 24;
+
+					}
 				}
 				break;
 			case ALLEGRO_KEY_LEFT:
 				x -= velMovimiento;
 				break;
-			case ALLEGRO_KEY_ESCAPE:
-				terminado = true;
+			case ALLEGRO_KEY_ENTER:
+				puntos = puntaje(resultado, avanceJugador, puntos);	
+				correcto = respuesta(resultado, avanceJugador); 
+				if (!correcto)
+				{
+					x = 24;
+					puntos = 0;
+					avanceJugador = 1;
+					n1 = rand()% rf + 1;
+					n2 = rand() % rf + 1;
+					l--;
+					if (l == 0)
+					{
+						terminado = true; 
+					}
+				}
+				else
+				{
+					n1 = resultado;
+					avanceJugador = resultado;
+					n2 = rand() % rf + 1;
+					
+				}
+				resultado = n1 + n2;
+				//terminado = true;
 				break;
 			}
 		}
@@ -286,6 +331,10 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				{
 					x += velMovimiento;
 				}
+				/*if (al_key_down(&keyState, ALLEGRO_KEY_ENTER))
+				{
+					puntos = puntaje(resultado, avanceJugador, puntos);
+				}*/
 			}
 			else
 			{
@@ -305,11 +354,16 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		}
 		if (dibujo)
 		{
-			numeros(n1, n2);
-			al_draw_bitmap(caminando[indice], x, y, NULL);
-			al_flip_display();
+
 			al_draw_bitmap(fondo[j], 0, 0, 0);
-			//al_clear_to_color(negro);
+			impNum(n1, n2);
+			al_draw_bitmap(caminando[indice], x, y, NULL);
+			al_draw_bitmap(vidas[l], 500, 74, NULL);
+			al_draw_text(Golden_Age_Shad, azul, 870, 275, NULL, (to_string(avanceJugador)).c_str());
+			al_draw_text(Golden_Age_Shad, rojo, 120, 74, NULL, (to_string(puntos)).c_str());
+			al_draw_filled_rectangle(929, 269, 1059, 341, rojo);
+			al_flip_display();
+
 		}
 	}
 	//al_destroy_display(ventana);
