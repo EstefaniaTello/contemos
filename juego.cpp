@@ -16,7 +16,7 @@
 #include "libreria.h"
 
 using namespace std;
-
+ 
 void salir();
 void jugar(ALLEGRO_DISPLAY* ventana);
 void menu(ALLEGRO_DISPLAY* ventana);
@@ -359,9 +359,8 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			impNum(n1, n2);
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_draw_bitmap(vidas[l], 500, 74, NULL);
-			al_draw_text(Golden_Age_Shad, azul, 870, 275, NULL, (to_string(avanceJugador)).c_str());
-			al_draw_text(Golden_Age_Shad, rojo, 120, 74, NULL, (to_string(puntos)).c_str());
-			al_draw_filled_rectangle(929, 269, 1059, 341, rojo);
+			al_draw_text(Golden_Age_Shad, azul, 812, 311, NULL, (to_string(avanceJugador)).c_str());
+			al_draw_text(Golden_Age_Shad, rojo, 70, 49, NULL, (to_string(puntos)).c_str());
 			al_flip_display();
 
 		}
