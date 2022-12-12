@@ -28,6 +28,7 @@ float alto = 700;
 
 ALLEGRO_BITMAP* buffer;
 ALLEGRO_FONT* Golden_Age_Shad;
+ALLEGRO_FONT* Golden_Age_Shad_pequeño;
 ALLEGRO_TIMER* segundoTimer;
 ALLEGRO_EVENT_QUEUE* queue;
 ALLEGRO_COLOR blanco;
@@ -58,6 +59,7 @@ int main()
 	ALLEGRO_DISPLAY* ventana = al_create_display(ancho, alto);
 	ALLEGRO_BITMAP* buffer = al_create_bitmap(ancho, alto);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 70, 0);
+	Golden_Age_Shad_pequeño = al_load_font("fuentes/Golden_Age_Shad.otf", 30, 0);
 
 	int ancho_W = GetSystemMetrics(SM_CXSCREEN);
 	int alto_W = GetSystemMetrics(SM_CYSCREEN);
@@ -219,16 +221,16 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	al_start_timer(tiempo);
 
 	bool terminado = false, dibujo = true, activo = false;
-	int x = 24, y = 460;
+	int x = 50, y = 460;
 	int xfondo = 24;
-	int velMovimiento = 183;
+	int velMovimiento = 200;
 	int i, j, l, indice, resultado, avanceJugador, puntos = 0;
 	indice = 0, j = 0, avanceJugador = 1;
 	bool correcto = true;
 	float camaraPos[2] = { 0,0 };
 	int n1, n2;
 	int rf = 5;
-	n1 = rand() % rf + 1;
+	n1 = 1;
 	n2 = rand() % rf + 1;
 	resultado = n1 + n2;
 	impNum(n1,n2); 
@@ -267,21 +269,21 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				avanceJugador++;
 				xfondo += velMovimiento;
 
-				if (x >= 1100)
+				if (x >= 950)
 				{
-					x = 24;
+					x = 50;
 				}
-				if (xfondo < 1100)
+				if (xfondo < 950)
 				{
 					j = 0;
 				}
 				else
 				{
 					j = 1;
-					if (xfondo > 2200)
+					if (xfondo > 1900)
 					{
 						j = 0;
-						xfondo = 24;
+						xfondo = 50;
 
 					}
 				}
@@ -297,7 +299,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 					x = 24;
 					puntos = 0;
 					avanceJugador = 1;
-					n1 = rand()% rf + 1;
+					n1 = 1;
 					n2 = rand() % rf + 1;
 					l--;
 					if (l == 0)
@@ -354,12 +356,19 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		}
 		if (dibujo)
 		{
-
 			al_draw_bitmap(fondo[j], 0, 0, 0);
 			impNum(n1, n2);
+
+			al_draw_text(Golden_Age_Shad_pequeño, rojo, 200, 410, NULL, "ESTAS EN EL");
+			al_draw_text(Golden_Age_Shad_pequeño, rojo, 480, 410, NULL, "AVANZA");
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_draw_bitmap(vidas[l], 500, 74, NULL);
-			al_draw_text(Golden_Age_Shad, azul, 812, 311, NULL, (to_string(avanceJugador)).c_str());
+			al_draw_text(Golden_Age_Shad_pequeño, azul, 240, 189, NULL, "Presiona enter en el resultado");
+			if (eventos.keyboard.keycode == ALLEGRO_KEY_ENTER)
+			{	
+				al_draw_text(Golden_Age_Shad, azul, 812, 311, NULL, (to_string(avanceJugador)).c_str());
+				al_draw_text(Golden_Age_Shad_pequeño, rojo, 742, 410, NULL, "LlEGASTE A");
+			}
 			al_draw_text(Golden_Age_Shad, rojo, 70, 49, NULL, (to_string(puntos)).c_str());
 			al_flip_display();
 
