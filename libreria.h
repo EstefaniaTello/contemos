@@ -15,11 +15,31 @@
 
 using namespace std;
 
-void numeros(int n1, int n2)
+void impNum(int n1, int n2)
 {
+	
 	ALLEGRO_FONT* Golden_Age_Shad;
 	ALLEGRO_COLOR azul = al_map_rgb(53, 43, 255);
 	Golden_Age_Shad = al_load_font("fuentes/Golden_Age_Shad.otf", 80, 0);
 	al_draw_text(Golden_Age_Shad, azul, 185, 275, NULL, (to_string(n1)).c_str());
 	al_draw_text(Golden_Age_Shad, azul, 520, 275, NULL, (to_string(n2)).c_str());
+ 
+}
+
+int puntaje(int resultado, int avanceJugador, int puntos)
+{
+	if (avanceJugador == resultado)
+	{
+		puntos = puntos + 10;
+	}
+	return puntos;
+}
+
+bool respuesta(int resultado, int avanceJugador)
+{
+	if (avanceJugador == resultado)
+	{
+		return true; 
+	}
+	return false;
 }
