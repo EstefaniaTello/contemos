@@ -1,0 +1,15 @@
+def puntosJuego(puntos,lista):
+    lista.append(puntos)
+    return lista
+
+def archiPuntos(lista):
+    with open("puntaje.txt", "a") as f:
+        for i in range(len(lista)):
+            f.write(str(lista[i])+'\n')
+
+
+def leerArchivo():
+    with open("puntaje.txt","r") as f:
+        listaArchivo = f.readlines()
+    listaArchivo.sort()
+    return listaArchivo
